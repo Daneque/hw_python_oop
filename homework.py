@@ -111,6 +111,7 @@ def read_package(workout_type: str, data) -> Training:
     """Прочитать данные полученные от датчиков."""
     if workout_type in training_codes:
         return training_codes[workout_type](*data)
+    raise Exception('Workout type not in list')
 
 
 def main(training: Training) -> None:
@@ -123,6 +124,7 @@ if __name__ == '__main__':
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
         ('WLK', [9000, 1, 75, 180]),
+        ('WL', [1, 2])
     ]
 
     for workout_type, data in packages:
