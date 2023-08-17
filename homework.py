@@ -6,8 +6,12 @@ SM_IN_M = 0.01
 
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    def __init__(self, training_type: str, duration: float, distance: float,
-                 speed: float, calories: float):
+    def __init__(self,
+                 training_type: str,
+                 duration: float,
+                 distance: float,
+                 speed: float,
+                 calories: float) -> None:
         self.training_type = training_type
         self.duration = duration
         self.distance = distance
@@ -28,21 +32,26 @@ class Training:
 # Длина одного шага в метрах.
     LEN_STEP = 0.65
     M_IN_KM = 1000
-    HOURS_IN_MINUTES = 60
+    MIN_IN_H = 60
 
-    def __init__(self, action: int, duration: float, weight: float):
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float) -> None:
         self.action = action
         self.duration = duration
         self.weight = weight
 
-# Возвращает дистанцию (в километрах), которую преодолел пользователь
     def get_distance(self) -> float:
+        """Distance in km."""
         return self.action * self.LEN_STEP / self.M_IN_KM
 
     def get_mean_speed(self) -> float:
+        """Mean speed in km/h."""
         return self.get_distance() / self.duration
 
     def get_spent_calories(self) -> float:
+        """Spent calories by training."""
         pass
 
     def show_training_info(self) -> InfoMessage:
@@ -54,12 +63,12 @@ class Training:
 class Running(Training):
     """Тренировка: бег."""
     CALORIES_MEAN_SPEED_MULTIPLIER = 18
-    CALORIES_MEAN_SPEED_SHIFT = 1.79
+    CALORIES_MEAN_SPEED_SHIFT = 20
 
     def get_spent_calories(self) -> float:
         return ((self.CALORIES_MEAN_SPEED_MULTIPLIER * self.get_mean_speed()
-                 + self.CALORIES_MEAN_SPEED_SHIFT) * self.weight / self.M_IN_KM
-                * self.duration * self.HOURS_IN_MINUTES)
+                 - self.CALORIES_MEAN_SPEED_SHIFT) * self.weight / self.M_IN_KM
+                * self.duration * self.MIN_IN_H)
 
 
 class SportsWalking(Training):
@@ -67,16 +76,21 @@ class SportsWalking(Training):
     FIRST_PARAMETER = 0.035
     SECOND_PARAMETER = 0.029
 
-    def __init__(self, action: int, duration: float,
-                 weight: float, height: float):
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float,
+                 height: float) -> None:
         super().__init__(action, duration, weight)
         self.height = height
 
     def get_spent_calories(self) -> float:
-        return (((self.FIRST_PARAMETER * self.weight)
-                + ((self.get_mean_speed() * KMH_IN_MS)**2 / self.height
-                * SM_IN_M) * self.SECOND_PARAMETER * self.weight)
-                * self.duration * self.HOURS_IN_MINUTES)
+        return (
+            (self.FIRST_PARAMETER * self.weight
+             + (self.get_mean_speed()**2 // self.height)
+             * self.SECOND_PARAMETER * self.weight)
+            * self.duration * self.MIN_IN_H
+        )
 
 
 class Swimming(Training):
@@ -85,19 +99,25 @@ class Swimming(Training):
     FIRST_PARAMETER = 1.1
     SECOND_PARAMETER = 2
 
-    def __init__(self, action: int, duration: float, weight: float,
-                 length_pool: float, count_pool: float):
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float,
+                 length_pool: float,
+                 count_pool: float) -> None:
         super().__init__(action, duration, weight)
         self.length_pool = length_pool
         self.count_pool = count_pool
 
     def get_mean_speed(self) -> float:
-        return (self.length_pool * self.count_pool / self.M_IN_KM) / self.duration
+        return (
+            self.length_pool * self.count_pool
+            / self.M_IN_KM / self.duration
+        )
 
     def get_spent_calories(self) -> float:
         return ((self.get_mean_speed() + self.FIRST_PARAMETER)
-                * self.SECOND_PARAMETER
-                * self.weight * self.duration)
+                * self.SECOND_PARAMETER * self.weight)
 
 
 training_codes: dict[str: Training] = {
@@ -129,6 +149,3 @@ if __name__ == '__main__':
     for workout_type, data in packages:
         training = read_package(workout_type, data)
         main(training)
-
-    test = Running(1206, 12, 6)
-    print(test.get_spent_calories())
