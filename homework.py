@@ -1,11 +1,10 @@
 
-# Константа для перевода метров в километры.
 KMH_IN_MS = 0.06
 SM_IN_M = 0.01
 
 
 class InfoMessage:
-    """Информационное сообщение о тренировке."""
+    """Class for infomessage with method get_message()."""
     def __init__(self,
                  training_type: str,
                  duration: float,
@@ -19,6 +18,7 @@ class InfoMessage:
         self.calories = calories
 
     def get_message(self) -> str:
+        """Infomessage about training."""
         return (f'Тип тренировки: {self.training_type}; '
                 f'Длительность: {self.duration:.3f} ч.; '
                 f'Дистанция: {self.distance:.3f} км; '
@@ -27,9 +27,8 @@ class InfoMessage:
 
 
 class Training:
-    """Базовый класс тренировки."""
+    """Basic class: Training."""
 
-# Длина одного шага в метрах.
     LEN_STEP = 0.65
     M_IN_KM = 1000
     MIN_IN_H = 60
@@ -55,13 +54,14 @@ class Training:
         pass
 
     def show_training_info(self) -> InfoMessage:
+        """Create object by InfoMessage class."""
         return InfoMessage(self.__class__.__name__, self.duration,
                            self.get_distance(), self.get_mean_speed(),
                            self.get_spent_calories())
 
 
 class Running(Training):
-    """Тренировка: бег."""
+    """Training: Running."""
     CALORIES_MEAN_SPEED_MULTIPLIER = 18
     CALORIES_MEAN_SPEED_SHIFT = 20
 
@@ -72,7 +72,7 @@ class Running(Training):
 
 
 class SportsWalking(Training):
-    """Тренировка: спортивная ходьба."""
+    """Training: Sports Walking."""
     FIRST_PARAMETER = 0.035
     SECOND_PARAMETER = 0.029
 
@@ -94,7 +94,7 @@ class SportsWalking(Training):
 
 
 class Swimming(Training):
-    """Тренировка: плавание."""
+    """Training: Swimming."""
     LEN_STEP = 1.38
     FIRST_PARAMETER = 1.1
     SECOND_PARAMETER = 2
@@ -128,14 +128,14 @@ training_codes: dict[str: Training] = {
 
 
 def read_package(workout_type: str, data) -> Training:
-    """Прочитать данные полученные от датчиков."""
+    """Read data from tracker."""
     if workout_type in training_codes:
         return training_codes[workout_type](*data)
     raise Exception('Workout type not in list')
 
 
 def main(training: Training) -> None:
-    """Главная функция."""
+    """Main function."""
     print(training.show_training_info().get_message())
 
 
